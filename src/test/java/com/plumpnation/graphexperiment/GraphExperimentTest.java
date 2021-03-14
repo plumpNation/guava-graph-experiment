@@ -74,40 +74,46 @@ class GraphExperimentTest {
 
     @Test
     public void testMutableNetwork() {
-        MutableNetwork<Integer, MyEdge> network = NetworkBuilder
+        MutableNetwork<MyNode, MyEdge> network = NetworkBuilder
                 .undirected()
                 .allowsParallelEdges(true)
                 .build();
 
-        final MyEdge terryEdge = new MyEdge("terry");
-        final MyEdge jeffEdge = new MyEdge("jeff");
-        final MyEdge fredEdge = new MyEdge("fred");
-        final MyEdge boomEdge = new MyEdge("boom");
-        final MyEdge foobarEdge = new MyEdge("foobar");
+        final MyNode node1 = new MyNode(1, "d108fhsifshf");
+        final MyNode node2 = new MyNode(2, "1doeufh10fsfq");
+        final MyNode node3 = new MyNode(3, "8sfhpifgf17s");
+        final MyNode node4 = new MyNode(4, "01ndsifs7wbj");
+        final MyNode node5 = new MyNode(5, "bsyfg61vosjhb");
+        final MyNode node100 = new MyNode(100, "2busdg710ubfu");
 
+        final MyEdge edge1 = new MyEdge("terry");
+        final MyEdge edge2 = new MyEdge("jeff");
+        final MyEdge edge3 = new MyEdge("fred");
+        final MyEdge edge4 = new MyEdge("boom");
+        final MyEdge edge5 = new MyEdge("foobar");
 
-        network.addEdge(1, 2, jeffEdge);
-        network.addEdge(1, 2, terryEdge);
-        network.addEdge(2, 3, fredEdge);
-        network.addEdge(3, 4, boomEdge);
-        network.addEdge(4, 5, foobarEdge);
+        network.addEdge(node1, node2, edge2);
+        network.addEdge(node1, node2, edge1);
+        network.addEdge(node2, node3, edge3);
+        network.addEdge(node3, node4, edge4);
+        network.addEdge(node4, node5, edge5);
 
-        assertEquals(Set.of(2), network.adjacentNodes(1));
+        assertEquals(Set.of(node2), network.adjacentNodes(node1));
+
+        // Parallel edges connect these nodes, so we get 2 back
+        assertEquals(Set.of(edge2, edge1), network.edgesConnecting(node1, node2));
 
         // All edges attached to 1 and 2
-        assertEquals(Set.of(jeffEdge, fredEdge), network.adjacentEdges(terryEdge));
+        assertEquals(Set.of(edge2, edge3), network.adjacentEdges(edge1));
 
         // All edges attached to 2 and 3
-        assertEquals(Set.of(jeffEdge, terryEdge, boomEdge), network.adjacentEdges(fredEdge));
+        assertEquals(Set.of(edge2, edge1, edge4), network.adjacentEdges(edge3));
 
         // All edges attached to 4 and 5
-        assertEquals(Set.of(boomEdge), network.adjacentEdges(foobarEdge));
+        assertEquals(Set.of(edge4), network.adjacentEdges(edge5));
 
-        assertTrue(network.nodes().contains(1));
-        assertTrue(network.nodes().contains(2));
-        assertTrue(network.nodes().contains(3));
-        assertTrue(network.nodes().contains(4));
-        assertTrue(network.nodes().contains(5));
-        assertFalse(network.nodes().contains(100));
+        assertTrue(network.nodes().containsAll(Set.of(node1, node2, node3, node4, node5)));
+
+        assertFalse(network.nodes().contains(node100));
     }
 }
